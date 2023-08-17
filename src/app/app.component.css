@@ -1,0 +1,62 @@
+  /* Style for header */
+  .header {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    margin: 18px 16px 0px 16px;
+    padding: 10px;
+  }
+
+  /* Style for body */
+  .body {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    margin: 12px 16px 0px 16px;
+    padding: 10px;
+  }
+
+  /* Style for flights container */
+  .flights-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    overflow-y: scroll;
+  }
+
+  .flights-container.flights-hidden{
+    right: 0;
+    left: auto;
+    width: 34px;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .flights-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .flights-container {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  /* Style for flight booking component */
+  .flight-booking {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    max-height: 100%;
+    max-width: 40%;
+    overflow-y: auto;
+  }
