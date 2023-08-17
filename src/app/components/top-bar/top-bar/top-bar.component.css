@@ -74,6 +74,7 @@
     border-top: 1px solid rgb(167, 168, 169);
     margin-top: 6px;
     padding-top: 6px;
+    margin-bottom: 4px;
   }
 
   .search-box + .remove {

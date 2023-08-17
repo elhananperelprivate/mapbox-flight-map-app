@@ -2,12 +2,30 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import '@angular/cdk/overlay-prebuilt.css';
 
-html{
+html {
   background-color: #b098bc;
 }
 
 
 .mapboxgl-ctrl-geocoder {
-  position: absolute!important;
-  max-width: 160px!important;
+  position: absolute !important;
+  max-width: 160px !important;
+}
+
+@media screen and (max-width: 1200px) {
+  .mapboxgl-ctrl-geocoder {
+
+    font-size: 12px !important;
+    max-height: 28px !important;
+  }
+
+  .mapboxgl-ctrl-geocoder--icon-search {
+    top: 0 !important;
+
+  }
+
+  .mapboxgl-ctrl-geocoder--input {
+    top: 0 !important;
+    height: 28px !important;
+  }
 }
