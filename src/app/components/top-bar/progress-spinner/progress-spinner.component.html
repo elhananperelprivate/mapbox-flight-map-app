@@ -1,0 +1,12 @@
+<div class="spinner-container">
+  <div class="spinner-content">
+    <div class="spinner-row">
+      <ng-container *ngFor="let image of imagesSec; let i = index">
+        <div [style.transform]="'translateX(' + ((i - currentImageIndex) * 80) + 'px) scale(' + (i == currentImageIndex ? 1.5 : 1) + ')'">
+          <img [src]="image" [style.width.px]="i == currentImageIndex ? 80 : 40">
+        </div>
+      </ng-container>
+    </div>
+    <div class="spinner-text">{{ text }}</div>
+  </div>
+</div>

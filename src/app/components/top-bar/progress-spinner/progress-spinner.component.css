@@ -1,0 +1,31 @@
+.spinner-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.spinner-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.spinner-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner-text {
+  margin-top: 30px;
+  font-size: 24px;
+  font-family: 'Lato Comic', cursive;
+  color: rgb(44, 44, 44);
+  text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+}

@@ -1,0 +1,136 @@
+.toggle-container {
+  margin-right: 6px;
+  margin-top: 3px;
+}
+
+.mat-button-toggle-group{
+  border-radius: 16px;
+  height: 28px;
+  align-items: center;
+}
+
+.mat-button-toggle {
+  border-radius: 18px;
+  font-family: 'Open Sans', sans-serif;
+  color: rgb(75, 76, 81);
+  font-size: 14px;
+}
+
+.date-form{
+  margin-inline-start: 5px;
+  border-inline-start: 1px solid #454545;
+  border-bottom: none;
+  border-top: none;
+  border-inline-end: none;
+  padding-inline-start: 6px;
+  padding-top: 4px;
+}
+
+.search-box-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-radius: 4px;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  margin-top: 16px;
+  border: none;
+}
+
+.search-box-container input[type="number"],
+.search-box-container input[type="text"] {
+  border: none;
+  padding-top: 8px;
+  outline: none;
+}
+
+.my-search-box {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-box {
+  display: flex;
+  flex-direction: column;
+  padding-inline: 10px;
+  overflow: hidden;
+}
+
+.search-box + .search-box {
+  border-inline-start: 1px solid rgb(167, 168, 169);
+}
+
+* { box-sizing: border-box; }
+
+/* Media query to switch to a column layout on narrow screens */
+@media screen and (max-width: 1200px) {
+  .search-box-container {
+    flex-direction: column;
+  }
+
+  /* Replace the border between search boxes with a border bottom */
+  .search-box + .search-box {
+    border-left: none;
+    border-top: 1px solid rgb(167, 168, 169);
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+
+  .search-box + .remove {
+    display: none;
+  }
+}
+
+/* non-essential decorative styles */
+.search-box {
+  font-family: 'Open Sans', sans-serif;
+  color: rgb(156, 160, 186);
+}
+
+.buttons-container{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-top: 12px;
+}
+
+.buttons-container .route-button {
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.route-button{
+  background-color: #43294f;
+  padding: 6px;
+  border-radius: 12px;
+  border: 0.5px solid rgb(34, 35, 35);;
+  font-family: 'Open Sans', sans-serif;
+  color: azure;
+}
+
+.route-button:hover,
+.route-button:focus{
+  background-color: #7b568c;
+}
+
+.route-button:disabled {
+  background-color: grey;
+  cursor: not-allowed;
+}
+
+.search-box-container input.no-border[type=date] {
+  border: none;
+  padding: 3px;
+  outline: none;
+}
+
+.custom-input:hover,
+.custom-input:focus {
+  background-color: #f8f0f0;
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2);
+}
+
+.past-date {
+  color: rgb(117, 116, 116);
+  background-color: rgb(198, 194, 194);
+}

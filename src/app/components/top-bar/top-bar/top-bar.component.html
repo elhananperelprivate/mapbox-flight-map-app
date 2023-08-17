@@ -1,0 +1,59 @@
+<div class="container">
+  <ng-container *ngIf="!hidden">
+    <div class="toggle-container">
+      <mat-button-toggle-group [(ngModel)]="isRoundTrip">
+        <mat-button-toggle [value]="true">Round-Trip</mat-button-toggle>
+        <mat-button-toggle [value]="false">One-Way-Trip</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <div class="search-box-container">
+      <div class="search-box">
+        <label>From</label>
+        <app-mapbox-search class="my-search-box custom-input" [geocoderName]="originGeocoder" [placeHolder]="fromSearch"
+          (result)="changeFormSearch($event)" (clearSecondBox)="setSecondSearchBoxWhenItcolumn($event)"></app-mapbox-search>
+        <!-- <input type="text" class="my-search-box custom-input" (keydown.enter)="$event.preventDefault()"
+          placeholder="Current Location" type="text" #fromElement [(ngModel)]="fromSearch"
+          (ngModelChange)="updateDisableSearch()" /> -->
+      </div>
+      <div class="search-box" [ngClass]="{'remove': removeSecondSearchBox === true}">
+        <label>Destination</label>
+        <div class="my-search-box custom-input">
+          <app-mapbox-search #secondGeocoder [geocoderName]="destinationGeocoder" [placeHolder]="destinationSearch"
+            (result)="changeDestinationSearch($event)"></app-mapbox-search>
+        </div>
+
+        <!-- <input type="text" class="my-search-box custom-input" (keydown.enter)="$event.preventDefault()"
+          placeholder="Search Destination" type="text" #destinationElement [(ngModel)]="destinationSearch"
+          (ngModelChange)="updateDisableSearch()" /> -->
+      </div>
+      <div class="search-box" style="margin-top: 3px;">
+        <label>Dates</label>
+        <div class="date-input">
+          <ng-container>
+            <input type="text" class="custom-input" dynamic-date-input placeholder="When will you leave?" id="departure"
+              name="departure" [(ngModel)]="departureDate" [min]="getMinDate(DateType.DEPARTURE_DATE)"
+              (ngModelChange)="updateDisableSearch()" />
+          </ng-container>
+          <ng-container *ngIf="isRoundTrip">
+            <input type="text" class="custom-input" dynamic-date-input placeholder="When will you return?" id="return"
+              name="return" [(ngModel)]="returnDate" [min]="getMinDate(DateType.RETURN_DATE)"
+              (ngModelChange)="updateDisableSearch()" />
+          </ng-container>
+        </div>
+      </div>
+      <div class="search-box">
+        <label>Travelers</label>
+        <input type="number" class="custom-input" value="1" min="1" [(ngModel)]="numOfPassengers"
+          (ngModelChange)="updateDisableSearch()" />
+      </div>
+    </div>
+    <div class="buttons-container">
+      <button class="route-button" (click)="route()" [disabled]="disableSearch">Serach Route</button>
+    </div>
+
+  </ng-container>
+
+  <button mat-icon-button class="button-hide" [ngClass]="hidden ? 'hidden' : ''" (click)="onHide()">
+    <mat-icon>{{hide_icon}}</mat-icon>
+  </button>
+</div>
