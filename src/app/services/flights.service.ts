@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import { Observable, from, forkJoin, switchMap, of, map } from 'rxjs';
 import { AirportsResponse } from '../shared/types/mapbox.types';
 import { MapboxService } from './mapbox.service';
+import * as mapboxgl from 'mapbox-gl';
 
 @Injectable({
   providedIn: 'root'
@@ -23,10 +24,10 @@ export class FlightsService {
     try {
       // Find closest airports to origin and destination
       const originAirport$ = from(
-        this.findClosestAirport(origin.lat, origin.lng, false)
+        this.findClosestAirport(origin, false)
       );
       const destinationAirport$ = from(
-        this.findClosestAirport(destination.lat, destination.lng)
+        this.findClosestAirport(destination, true)
       );
 
       return forkJoin([originAirport$, destinationAirport$]).pipe(
@@ -46,17 +47,15 @@ export class FlightsService {
     }
   }
 
-  findClosestAirport(lat: number, lng: number, des = true) {
-    const fullAddress$ = from(this.mapboxService.findCountryOfLngLat(lat, lng));
-
-    return fullAddress$.pipe(
-      switchMap((fullAddress) => {
-        console.log(JSON.stringify(fullAddress));
-        const country = this.extractCountry(
-          // TODO fullAddress?.results[0].address_components
-          'Israel'
-        );
-        const arrayWithOnlyOneAirport = [
+  findClosestAirport(lngLat: mapboxgl.LngLat, des = true) {
+    return this.mapboxService.getCountryOfLngLat(lngLat).pipe(
+      switchMap((country) => {
+        console.log(JSON.stringify(country));
+        // const countryShortName = this.extractCountry(
+        //   country.features[0].address_components,
+        // );
+        const countryShortName = country.features[0].place_name;
+        const countriesWithOnlyOneMainAirport = [
           {
             countryName: 'Israel',
             countryCode: 'IL',
@@ -77,8 +76,8 @@ export class FlightsService {
           },
           // Add more countries and their airports as needed
         ];
-        const airport = arrayWithOnlyOneAirport.find(
-          (c) => c.countryName === country || c.countryCode === country
+        const airport = countriesWithOnlyOneMainAirport.find(
+          (c) => c.countryName === countryShortName || c.countryCode === countryShortName
         );
         if (airport) {
           return of({
@@ -86,7 +85,7 @@ export class FlightsService {
             name: airport.airportName,
           });
         } else {
-          const url = `${this.BASE_URL}/amadeus-api/airports?lat=${lat}&lng=${lng}`;
+          const url = `${this.BASE_URL}/amadeus-api/airports?lat=${lngLat.lat}&lng=${lngLat.lng}`;
           return this.http.get<AirportsResponse>(url).pipe(
             map((airportsData) => {
               const airports = airportsData.data.filter(
@@ -120,17 +119,17 @@ export class FlightsService {
   }
 
   // extract country short name (e.g. GB for Great Britain) from google geocode API result
-  extractCountry(addrComponents: any) {
-    for (let i = 0; i < addrComponents.length; i++) {
-      if (addrComponents[i].types[0] == 'country') {
-        return addrComponents[i].short_name;
-      }
-      if (addrComponents[i].types.length == 2) {
-        if (addrComponents[i].types[0] == 'political') {
-          return addrComponents[i].short_name;
-        }
-      }
-    }
-    return false;
-  }
+  // extractCountry(addrComponents: any) {
+  //   for (let i = 0; i < addrComponents.length; i++) {
+  //     if (addrComponents[i].types[0] == 'country') {
+  //       return addrComponents[i].short_name;
+  //     }
+  //     if (addrComponents[i].types.length == 2) {
+  //       if (addrComponents[i].types[0] == 'political') {
+  //         return addrComponents[i].short_name;
+  //       }
+  //     }
+  //   }
+  //   return false;
+  // }
 }

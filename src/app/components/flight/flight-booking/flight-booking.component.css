@@ -1,0 +1,55 @@
+.flights-list-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.flight-list {
+  display: flex;
+  flex-direction: column;
+  background-color: #aca7a7b3;
+  padding-top: 12px;
+  padding-left: 20px;
+  padding-right: 10px;
+  flex-wrap: wrap;
+  gap: 20px;
+  transition: all 0.3s ease-in-out;
+  background-image: linear-gradient(to left, transparent 0%, #aca7a7b3 100%);
+  min-width: 6px;
+  min-height: 100vh;
+}
+
+.button-exit {
+  position: fixed;
+  top: 25px;
+  right: 244px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0px 0px 5px #888888;
+}
+
+.button-exit.hidden {
+  color: rgb(53, 42, 66);
+  background-color: #e0e0e0d1;
+  right: 4px;
+}
+
+.button-hide {
+  position: fixed;
+  top: 95px;
+  right: 244px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0px 0px 5px #888888;
+}
+
+.button-hide.hidden {
+  color: rgb(53, 42, 66);
+  background-color: #e0e0e0d1;
+  right: 4px;
+}

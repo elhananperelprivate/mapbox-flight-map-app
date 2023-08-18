@@ -1,1 +1,21 @@
-<p>flight-card works!</p>
+<div class="flight-card">
+  <div class="flight-card-header">
+    <h3 class="flight-description">{{flight.itineraries[0].segments[0].departure.iataCode}} to
+      {{flight.itineraries[0].segments[flight.itineraries[0].segments.length -1].arrival.iataCode}}</h3>
+    <h4 class="flight-price">{{ flight.price.total }} {{ flight.price.currency }}</h4>
+    <div class="flight-details">
+      <p>{{ flight.itineraries[0].duration | duration }}</p>
+      <mat-divider [vertical]="true"></mat-divider>
+      <p>{{ flight.itineraries[0].segments.length -1}} stops</p>
+    </div>
+  </div>
+  <div class="flight-card-body">
+    <hr>
+    <ul>
+      <li *ngFor="let segment of flight.itineraries[0].segments">
+        <p><strong>Departure:</strong> {{ segment.departure.iataCode }} <strong>at</strong> {{ segment.departure.at }}
+        <p><strong>Arrival:</strong> {{ segment.arrival.iataCode }} <strong>at</strong> {{ segment.arrival.at }}
+      </li>
+    </ul>
+  </div>
+</div>

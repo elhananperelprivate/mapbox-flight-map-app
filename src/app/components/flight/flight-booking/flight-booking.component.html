@@ -1,1 +1,18 @@
-<p>flight-booking works!</p>
+<div class="flights-list-container">
+  <button mat-icon-button class="button-exit" [ngClass]="hidden ? 'hidden' : ''" (click)="onClose()">
+    <mat-icon>close</mat-icon>
+  </button>
+  <button mat-icon-button class="button-hide" [ngClass]="hidden ? 'hidden' : ''" (click)="onHide()">
+    <mat-icon>{{hide_icon}}</mat-icon>
+  </button>
+  <div class="flight-list">
+    <ng-container *ngIf="!hidden">
+      <ng-container *ngFor="let flight of flights">
+        <app-flight-card [flight]="flight" (click)="onFlightSelected(flight)"></app-flight-card>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>
+
+
+

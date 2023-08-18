@@ -22,7 +22,6 @@ export class MapboxSearchComponent implements OnInit {
   @Input() geocoderName = 'geocoder';
   @Input() placeHolder!: string;
 
-
   @Output() result = new EventEmitter<MapboxGeocoder.Result>();
   @Output() clearSecondBox = new EventEmitter<boolean>();
 
@@ -53,9 +52,8 @@ export class MapboxSearchComponent implements OnInit {
     });
 
     geocoder.on('result', (res) => {
-      console.log(JSON.stringify(res));
       this.clearSecondBox.emit(true);
-      this.result.emit(res);
+      this.result.emit(res?.result || { result: {} });
     });
 
     geocoder.on('clear', () => {

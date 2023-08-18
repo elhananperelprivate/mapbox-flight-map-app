@@ -113,14 +113,8 @@ export class TopBarComponent {
   route() {
     const isRoundTrip = this.isRoundTrip || false;
     this.routeRequested.emit({
-      origin: {
-        lat: this.fromCoordinates?.center[1] || 0,
-        lng: this.fromCoordinates?.center[0] || 0,
-      },
-      destination: {
-        lat: this.destinationCoordinates?.center[1] || 0,
-        lng: this.destinationCoordinates?.center[0] || 0,
-      },
+      origin: new mapboxgl.LngLat(this.fromCoordinates?.center[0], this.fromCoordinates?.center[1]),
+      destination: new mapboxgl.LngLat(this.destinationCoordinates?.center[0], this.destinationCoordinates?.center[1]),
       isRoundTrip,
       departureDate: this.departureDate,
       ...(this.returnDate && { returnDate: this.returnDate }),
@@ -164,14 +158,22 @@ export class TopBarComponent {
       (!this.isRoundTrip ||
         (this.isRoundTrip && this.returnDate && this.returnDate.length > 0))
     );
+    console.log(this.fromSearch);
+    console.log(this.destinationSearch);
+    console.log(this.disableSearch);
+
   }
 
   changeFormSearch(result: MapboxGeocoder.Result) {
     this.fromSearch = result.place_name;
+    this.fromCoordinates = result;
+    this.updateDisableSearch();
   }
 
   changeDestinationSearch(result: MapboxGeocoder.Result) {
     this.destinationSearch = result.place_name;
+    this.destinationCoordinates = result;
+    this.updateDisableSearch();
   }
 
   setSecondSearchBoxWhenItcolumn(set: boolean) {

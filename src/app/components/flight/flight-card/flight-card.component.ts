@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { FlightType } from 'src/app/shared/types/types';
 
 @Component({
   selector: 'app-flight-card',
@@ -6,5 +7,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./flight-card.component.css']
 })
 export class FlightCardComponent {
+
+  @Input()
+  flight!: FlightType;
+
+  ngOnInit(): void {
+    console.log('app-flight');
+  }
 
 }

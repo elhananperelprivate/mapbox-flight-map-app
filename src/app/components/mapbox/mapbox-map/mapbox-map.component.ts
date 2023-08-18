@@ -5,14 +5,25 @@ import {
   Output,
   EventEmitter,
   Input,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { environment } from 'src/environments/environment.development';
 import * as mapboxglpolyline from '@mapbox/polyline';
 import * as turf from '@turf/turf';
-import { destinationMarkerConfig, originMarkerConfig } from 'src/app/shared/config/markers.config';
-import { MapBoxAddress, ChooseToType, CustomMarkerOptions } from 'src/app/shared/types/mapbox.types';
+import {
+  destinationMarkerConfig,
+  originMarkerConfig,
+} from 'src/app/shared/config/markers.config';
+import {
+  MapBoxAddress,
+  ChooseToType,
+  CustomMarkerOptions,
+} from 'src/app/shared/types/mapbox.types';
 import { MapboxService } from 'src/app/services/mapbox.service';
+import { switchMap, of, catchError } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 declare global {
   interface Window {
@@ -23,9 +34,9 @@ declare global {
 @Component({
   selector: 'app-mapbox-map',
   templateUrl: './mapbox-map.component.html',
-  styleUrls: ['./mapbox-map.component.css']
+  styleUrls: ['./mapbox-map.component.css'],
 })
-export class MapboxMapComponent implements OnInit {
+export class MapboxMapComponent implements OnInit, OnChanges {
   map!: mapboxgl.Map;
   openInfoWindow!: mapboxgl.Popup;
 
@@ -37,7 +48,11 @@ export class MapboxMapComponent implements OnInit {
   @Output() originSelected = new EventEmitter<MapBoxAddress>();
   @Output() destinationSelected = new EventEmitter<MapBoxAddress>();
 
-  constructor(public _ngZone: NgZone, private mapBoxService: MapboxService) {}
+  constructor(
+    public _ngZone: NgZone,
+    private mapBoxService: MapboxService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit() {
     window['angularComponentRef'] = { component: this, zone: this._ngZone };
@@ -54,6 +69,38 @@ export class MapboxMapComponent implements OnInit {
     this.styleMap();
 
     this.handleClickEvent();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(JSON.stringify(changes));
+
+    if (changes['originPoint'] && changes['originPoint'].currentValue != null) {
+      this.addMarkerTolatLng(
+        changes['originPoint'].currentValue,
+        originMarkerConfig
+      );
+    }
+    if (
+      changes['destinationPoint'] &&
+      changes['destinationPoint'].currentValue != null
+    ) {
+      this.addMarkerTolatLng(
+        changes['destinationPoint'].currentValue,
+        destinationMarkerConfig
+      );
+    }
+    if (
+      changes['airportCodes'] &&
+      changes['airportCodes'].currentValue?.size > 0
+    ) {
+      this.addAirportMarkers();
+    }
+    if (
+      changes['routsToDraw'] &&
+      changes['routsToDraw'].currentValue?.length > 0
+    ) {
+      //this.searchRoutes();
+    }
   }
 
   styleMap() {
@@ -90,44 +137,45 @@ export class MapboxMapComponent implements OnInit {
 
   getCurrentPositionAndFocuse(): void {
     navigator.geolocation.getCurrentPosition((position) => {
-      const destinationAirport = { lat: 51.47, lng: -0.4543 };
-
-      this.map.setCenter(destinationAirport);
-      this.map.setZoom(6);
-      // this.map.setCenter({
-      //   lng: position.coords.longitude,
-      //   lat: position.coords.latitude,
-      // });
-      // this.map.setZoom(12);
+      this.map.setCenter({
+        lng: position.coords.longitude,
+        lat: position.coords.latitude,
+      });
+      this.map.setZoom(12);
     });
   }
 
   handleClickEvent() {
-    this.serachAndDrawRout();
     this.map.on('click', (e) => {
       const choosePlace = (chooseTo: ChooseToType) => {
         if (this.openInfoWindow.isOpen()) {
           this.openInfoWindow.remove();
         }
-        this.mapBoxService.getFullAddress(e.lngLat.lat, e.lngLat.lng).subscribe(
-          (response: MapBoxAddress) => {
-            if (response.features && response.features.length > 0) {
-              console.log(response.features[0].place_name);
-              this.addMarkerTolatLng(
-                e.lngLat,
-                chooseTo === 'destination'
-                  ? destinationMarkerConfig
-                  : originMarkerConfig
-              );
-            } else {
-              console.log('Address not found');
-            }
-          },
-          (error: any) => {
-            console.error('Error fetching address:', error);
-            console.log('Error fetching address');
-          }
-        );
+        this.mapBoxService
+          .getFullAddress(e.lngLat)
+          .pipe(
+            switchMap((response: MapBoxAddress) => {
+              if (response.features && response.features.length > 0) {
+                console.log(response.features[0].place_name);
+                this.addMarkerTolatLng(
+                  e.lngLat,
+                  chooseTo === 'destination'
+                    ? destinationMarkerConfig
+                    : originMarkerConfig
+                );
+                return of(response);
+              } else {
+                console.log('Address not found');
+                return of(null);
+              }
+            }),
+            catchError((error: any) => {
+              console.error('Error fetching address:', error);
+              console.log('Error fetching address');
+              return of(null);
+            })
+          )
+          .subscribe();
 
         console.log(chooseTo, e.lngLat);
       };
@@ -172,13 +220,10 @@ export class MapboxMapComponent implements OnInit {
     const originAirport = new mapboxgl.LngLat(-73.7781, 40.6413);
     const destinationAirport = new mapboxgl.LngLat(-0.4543, 51.47);
 
-    this.mapBoxService.findCountryOfLngLat(-73.7781, 40.6413).subscribe((res)=>{
-      console.log('country -- -',res);
 
-    });
 
     const origin = new mapboxgl.LngLat(-0.10980685159159975, 51.54960410570894);
-    const destination = new mapboxgl.LngLat(-73.7781, 40.6413)
+    const destination = new mapboxgl.LngLat(-73.7781, 40.6413);
 
     this.map.on('load', () => {
       this.drawFlightLine(originAirport, destinationAirport);
@@ -287,5 +332,30 @@ export class MapboxMapComponent implements OnInit {
       },
     });
   }
-}
 
+  async addAirportMarkers() {
+    // Get the coordinates for all the airports in the order specified in airportCodes
+    for (const code of this.airportCodes) {
+      try {
+        this.mapBoxService.getAirportCoordinates(code).subscribe({
+          next: (response) => {
+            console.log(response);
+            // Add the marker positions for each airport
+            response.map((airportCoordinate: any) => {
+              this.addMarkerTolatLng(airportCoordinate, originMarkerConfig);
+            });
+          },
+          error: (e) => console.error('addAirportMarkers error - ', e),
+          complete: () => console.info('complete'),
+        });
+      } catch (error) {
+        console.error(`Error adding coordinates for airport ${code}: ${error}`);
+        this.toastr.error(
+          `Error finding coordinates for airport ${code}`,
+          'Error'
+        );
+        return;
+      }
+    }
+  }
+}
