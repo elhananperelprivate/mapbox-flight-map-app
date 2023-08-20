@@ -13,6 +13,7 @@ import { environment } from 'src/environments/environment.development';
 import * as mapboxglpolyline from '@mapbox/polyline';
 import * as turf from '@turf/turf';
 import {
+  airportMarkerConfig,
   destinationMarkerConfig,
   originMarkerConfig,
 } from 'src/app/shared/config/markers.config';
@@ -24,6 +25,8 @@ import {
 import { MapboxService } from 'src/app/services/mapbox.service';
 import { switchMap, of, catchError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { Route } from 'src/app/shared/types/types';
+import { AirportsResponse } from '../../../shared/types/types';
 
 declare global {
   interface Window {
@@ -44,6 +47,8 @@ export class MapboxMapComponent implements OnInit, OnChanges {
 
   @Input() originPoint!: mapboxgl.LngLat | null;
   @Input() destinationPoint!: mapboxgl.LngLat | null;
+  @Input()
+  routsToDraw!: Route[];
 
   @Output() originSelected = new EventEmitter<MapBoxAddress>();
   @Output() destinationSelected = new EventEmitter<MapBoxAddress>();
@@ -216,17 +221,8 @@ export class MapboxMapComponent implements OnInit, OnChanges {
     }
   }
 
-  serachAndDrawRout() {
-    const originAirport = new mapboxgl.LngLat(-73.7781, 40.6413);
-    const destinationAirport = new mapboxgl.LngLat(-0.4543, 51.47);
-
-
-
-    const origin = new mapboxgl.LngLat(-0.10980685159159975, 51.54960410570894);
-    const destination = new mapboxgl.LngLat(-73.7781, 40.6413);
-
+  serachAndDrawRout(origin: mapboxgl.LngLat, destination: mapboxgl.LngLat) {
     this.map.on('load', () => {
-      this.drawFlightLine(originAirport, destinationAirport);
       this.mapBoxService
         .getRoute(
           `${origin.lng},${origin.lat}`,
@@ -333,6 +329,11 @@ export class MapboxMapComponent implements OnInit, OnChanges {
     });
   }
 
+  async drawAllRoutes() {
+    for (const route of this.routsToDraw) {
+    }
+  }
+
   async addAirportMarkers() {
     // Get the coordinates for all the airports in the order specified in airportCodes
     for (const code of this.airportCodes) {
@@ -341,9 +342,13 @@ export class MapboxMapComponent implements OnInit, OnChanges {
           next: (response) => {
             console.log(response);
             // Add the marker positions for each airport
-            response.map((airportCoordinate: any) => {
-              this.addMarkerTolatLng(airportCoordinate, originMarkerConfig);
-            });
+
+            const AirportCoordinates = new mapboxgl.LngLat(
+              response?.features[0].center[0],
+              response?.features[0].center[1]
+            );
+
+            this.addMarkerTolatLng(AirportCoordinates, airportMarkerConfig);
           },
           error: (e) => console.error('addAirportMarkers error - ', e),
           complete: () => console.info('complete'),

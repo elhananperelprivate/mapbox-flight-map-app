@@ -12,3 +12,9 @@ export const destinationMarkerConfig: CustomMarkerOptions = {
   width: 30,
   url: 'assets/images/destination-1.png'
 }
+
+export const airportMarkerConfig: CustomMarkerOptions = {
+  height: 30,
+  width: 30,
+  url: 'assets/images/airport-1.png'
+}

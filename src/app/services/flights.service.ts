@@ -117,19 +117,4 @@ export class FlightsService {
     ).format('YYYY-MM-DD')}`;
     return this.http.get(url);
   }
-
-  // extract country short name (e.g. GB for Great Britain) from google geocode API result
-  // extractCountry(addrComponents: any) {
-  //   for (let i = 0; i < addrComponents.length; i++) {
-  //     if (addrComponents[i].types[0] == 'country') {
-  //       return addrComponents[i].short_name;
-  //     }
-  //     if (addrComponents[i].types.length == 2) {
-  //       if (addrComponents[i].types[0] == 'political') {
-  //         return addrComponents[i].short_name;
-  //       }
-  //     }
-  //   }
-  //   return false;
-  // }
 }

@@ -9,6 +9,9 @@ import { ProgressSpinnerComponent } from './components/top-bar/progress-spinner/
 import { FlightType, FlightSegment } from './shared/types/mapbox.types';
 import { FormOutputType, Route } from './shared/types/types';
 import { airplaneSpinnerImages } from './shared/config/config';
+import { forkJoin, from, of, switchMap } from 'rxjs';
+import { destination } from '@turf/turf';
+import { MapboxService } from './services/mapbox.service';
 
 @Component({
   selector: 'app-root',
@@ -27,11 +30,12 @@ export class AppComponent {
   destination!: mapboxgl.LngLat | null;
   routsToDraw!: Route[];
 
-  fromCoordinatesSelected!:  MapboxGeocoder.Result;
-  destinationCoordinatesSelected!:  MapboxGeocoder.Result;
+  fromCoordinatesSelected!: MapboxGeocoder.Result;
+  destinationCoordinatesSelected!: MapboxGeocoder.Result;
 
   constructor(
-    private mapFlightService: FlightsService,
+    private flightService: FlightsService,
+    private mapboxService: MapboxService,
     private overlay: Overlay,
     private cdRef: ChangeDetectorRef
   ) {}
@@ -59,7 +63,7 @@ export class AppComponent {
       ? new Date(searchForm.returnDate)
       : undefined;
     const passengers = searchForm.numOfPassengers;
-    this.mapFlightService
+    this.flightService
       .searchMapFlightPath(
         this.origin,
         this.destination,
@@ -128,29 +132,58 @@ export class AppComponent {
     this.flightsHidden = true;
 
     if (firstSegment && lastSegment && this.origin && this.destination) {
-      const originToAirportRout = new Route(
-        'drive',
-        this.origin,
-        (firstSegment as FlightSegment).departure.iataCode,
-        null,
-        moment((firstSegment as FlightSegment)?.arrival?.at)
-          .subtract(3, 'hours')
-          .toDate()
-      );
+      try {
+        // Find closest airports to origin and destination
+        const originAirport$ = from(
+          this.mapboxService.getAirportCoordinates(
+            (firstSegment as FlightSegment).departure.iataCode
+          )
+        );
+        const destinationAirport$ = from(
+          this.mapboxService.getAirportCoordinates(
+            (lastSegment as FlightSegment).arrival.iataCode
+          )
+        );
 
-      const airportToDestinationtRout = new Route(
-        'drive',
-        (lastSegment as FlightSegment).arrival.iataCode,
-        this.destination,
-        moment((lastSegment as FlightSegment)?.departure?.at)
-          .add(1, 'hours')
-          .toDate(),
-        null
-      );
-      const tempRouts = [originToAirportRout, airportToDestinationtRout];
-      this.routsToDraw = tempRouts;
+        return forkJoin([originAirport$, destinationAirport$]).pipe(
+          switchMap(([originAirport, destinationAirport]) => {
+            if (this.origin && this.destination) {
+              const originToAirportRout = new Route(
+                'drive',
+                this.origin,
+                originAirport,
+                null,
+                moment((firstSegment as FlightSegment)?.arrival?.at)
+                  .subtract(3, 'hours')
+                  .toDate()
+              );
+
+              const airportToDestinationtRout = new Route(
+                'drive',
+                destinationAirport,
+                this.destination,
+                moment((lastSegment as FlightSegment)?.departure?.at)
+                  .add(1, 'hours')
+                  .toDate(),
+                null
+              );
+              const tempRouts = [
+                originToAirportRout,
+                airportToDestinationtRout,
+              ];
+              this.routsToDraw = tempRouts;
+              return of([]);
+            }else{
+              return of([]);
+            }
+
+          })
+        );
+      } catch (e) {
+        console.log(e);
+        return of([]);
+      }
     }
-
-    console.log(JSON.stringify(flight));
+    return of([]);
   }
 }

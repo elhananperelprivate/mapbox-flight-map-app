@@ -36,8 +36,8 @@ export interface FlightSegment {
 export class Route {
   constructor(
     public routeType: 'drive',
-    public routeOrigin: mapboxgl.LngLat | string,
-    public routDestination: mapboxgl.LngLat | string,
+    public routeOrigin: mapboxgl.LngLat,
+    public routDestination: mapboxgl.LngLat,
     public routeStartDate: Date | null,
     public routeEndDate: Date | null
   ) {}
