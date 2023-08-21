@@ -21,12 +21,13 @@ import {
   MapBoxAddress,
   ChooseToType,
   CustomMarkerOptions,
+  MapBoxFeature,
 } from 'src/app/shared/types/mapbox.types';
 import { MapboxService } from 'src/app/services/mapbox.service';
 import { switchMap, of, catchError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { Route } from 'src/app/shared/types/types';
-import { AirportsResponse } from '../../../shared/types/types';
+import { v4 as uuidv4 } from 'uuid';
 
 declare global {
   interface Window {
@@ -50,8 +51,8 @@ export class MapboxMapComponent implements OnInit, OnChanges {
   @Input()
   routsToDraw!: Route[];
 
-  @Output() originSelected = new EventEmitter<MapBoxAddress>();
-  @Output() destinationSelected = new EventEmitter<MapBoxAddress>();
+  @Output() originSelected = new EventEmitter<MapBoxFeature>();
+  @Output() destinationSelected = new EventEmitter<MapBoxFeature>();
 
   constructor(
     public _ngZone: NgZone,
@@ -98,13 +99,13 @@ export class MapboxMapComponent implements OnInit, OnChanges {
       changes['airportCodes'] &&
       changes['airportCodes'].currentValue?.size > 0
     ) {
-      this.addAirportMarkers();
+      this.drawAllFlightsMarkersAndRoutes();
     }
     if (
       changes['routsToDraw'] &&
       changes['routsToDraw'].currentValue?.length > 0
     ) {
-      //this.searchRoutes();
+      this.drawAllEarthRoutes();
     }
   }
 
@@ -168,6 +169,13 @@ export class MapboxMapComponent implements OnInit, OnChanges {
                     ? destinationMarkerConfig
                     : originMarkerConfig
                 );
+
+                if (chooseTo === 'destination') {
+                  this.destinationSelected.emit(response.features[0]);
+                } else {
+                  this.originSelected.emit(response.features[0]);
+                }
+
                 return of(response);
               } else {
                 console.log('Address not found');
@@ -221,7 +229,7 @@ export class MapboxMapComponent implements OnInit, OnChanges {
     }
   }
 
-  serachAndDrawRout(origin: mapboxgl.LngLat, destination: mapboxgl.LngLat) {
+  serachAndDrawRout(origin: mapboxgl.LngLat, destination: mapboxgl.LngLat, routeUniqueId = uuidv4()) {
     this.map.on('load', () => {
       this.mapBoxService
         .getRoute(
@@ -241,7 +249,7 @@ export class MapboxMapComponent implements OnInit, OnChanges {
 
               // Draw the route line on the map
               this.map.addLayer({
-                id: 'route',
+                id: `route${routeUniqueId}`,
                 type: 'line',
                 source: {
                   type: 'geojson',
@@ -250,7 +258,6 @@ export class MapboxMapComponent implements OnInit, OnChanges {
                     properties: {},
                     geometry: {
                       type: 'LineString',
-                      // coordinates: decodedCoordinates
                       coordinates: decodedCoordinates.map(([num1, num2]) => [
                         num2,
                         num1,
@@ -269,7 +276,11 @@ export class MapboxMapComponent implements OnInit, OnChanges {
               });
             }
           },
-          error: (e) => console.error(e),
+          error: (e) => {
+            this.handleError(
+              `Error draing route from ${origin.toString} to ${destination.toString}`
+            );
+          },
           complete: () => console.info('complete'),
         });
     });
@@ -277,7 +288,8 @@ export class MapboxMapComponent implements OnInit, OnChanges {
 
   drawFlightLine(
     originAirport: mapboxgl.LngLat,
-    destinationAirport: mapboxgl.LngLat
+    destinationAirport: mapboxgl.LngLat,
+    routeUniqueId = uuidv4()
   ) {
     const flightRoute = {
       type: 'FeatureCollection',
@@ -313,14 +325,15 @@ export class MapboxMapComponent implements OnInit, OnChanges {
 
     // Update the route with calculated arc coordinates
     flightRoute.features[0].geometry.coordinates = arc;
-    this.map.addSource('flightRoute', {
+    const uniqName = `flightRoute${routeUniqueId}`;
+    this.map.addSource(uniqName, {
       type: 'geojson',
       data: flightRoute as any,
     });
 
     this.map.addLayer({
-      id: 'flightRoute',
-      source: 'flightRoute',
+      id: uniqName,
+      source: uniqName,
       type: 'line',
       paint: {
         'line-width': 2,
@@ -329,38 +342,47 @@ export class MapboxMapComponent implements OnInit, OnChanges {
     });
   }
 
-  async drawAllRoutes() {
-    for (const route of this.routsToDraw) {
-    }
-  }
+  drawAllFlightsMarkersAndRoutes() {
+    let previousCoordinates: mapboxgl.LngLat | null = null; // Initialize to null for the first airport
 
-  async addAirportMarkers() {
-    // Get the coordinates for all the airports in the order specified in airportCodes
     for (const code of this.airportCodes) {
       try {
         this.mapBoxService.getAirportCoordinates(code).subscribe({
           next: (response) => {
             console.log(response);
             // Add the marker positions for each airport
-
-            const AirportCoordinates = new mapboxgl.LngLat(
+            const airportCoordinates = new mapboxgl.LngLat(
               response?.features[0].center[0],
               response?.features[0].center[1]
             );
 
-            this.addMarkerTolatLng(AirportCoordinates, airportMarkerConfig);
+            this.addMarkerTolatLng(airportCoordinates, airportMarkerConfig);
+
+            if (previousCoordinates) {
+              // Draw flight route between previous airport and current airport
+              this.drawFlightLine(previousCoordinates, airportCoordinates);
+            }
+
+            previousCoordinates = airportCoordinates;
           },
           error: (e) => console.error('addAirportMarkers error - ', e),
           complete: () => console.info('complete'),
         });
       } catch (error) {
         console.error(`Error adding coordinates for airport ${code}: ${error}`);
-        this.toastr.error(
-          `Error finding coordinates for airport ${code}`,
-          'Error'
-        );
+        this.handleError(`Error finding coordinates for airport ${code}`);
         return;
       }
     }
+  }
+
+  drawAllEarthRoutes() {
+    for (const route of this.routsToDraw) {
+      this.serachAndDrawRout(route.routeOrigin, route.routDestination);
+    }
+  }
+
+  handleError(message: string) {
+    this.toastr.error(`${message}`, 'Error');
   }
 }

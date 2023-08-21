@@ -5,6 +5,7 @@ import {
   Input,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { environment } from 'src/environments/environment.development';
@@ -17,7 +18,7 @@ import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 })
 export class MapboxSearchComponent implements OnInit {
   results: any;
-  originGeocoder!: typeof MapboxGeocoder;
+  geocoder!: MapboxGeocoder;
 
   @Input() geocoderName = 'geocoder';
   @Input() placeHolder!: string;
@@ -31,6 +32,16 @@ export class MapboxSearchComponent implements OnInit {
 
   ngOnInit() {}
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['placeHolder'] && changes['placeHolder'].currentValue != null) {
+      // this.fromCoordinates = changes['fromCoordinates'].currentValue;
+      // this.fromSearch = this.fromCoordinates?.place_name || '';
+      if (this.geocoder) {
+        this.geocoder.setPlaceholder(changes['placeHolder'].currentValue);
+      }
+    }
+  }
+
   ngAfterViewInit(): void {
     //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
     //Add 'implements AfterViewInit' to the class.
@@ -40,6 +51,8 @@ export class MapboxSearchComponent implements OnInit {
       types: 'country,region,place,postcode,locality,neighborhood',
       placeholder: this.placeHolder || 'Search..',
     });
+
+    this.geocoder = geocoder;
 
     try {
       geocoder.addTo(`#${this.geocoderName}`);

@@ -6,7 +6,7 @@ import { ResizeEvent } from 'angular-resizable-element';
 import * as mapboxgl from 'mapbox-gl';
 import { FlightsService } from './services/flights.service';
 import { ProgressSpinnerComponent } from './components/top-bar/progress-spinner/progress-spinner.component';
-import { FlightType, FlightSegment } from './shared/types/mapbox.types';
+import { FlightType, FlightSegment, MapBoxFeature } from './shared/types/mapbox.types';
 import { FormOutputType, Route } from './shared/types/types';
 import { airplaneSpinnerImages } from './shared/config/config';
 import { forkJoin, from, of, switchMap } from 'rxjs';
@@ -30,8 +30,8 @@ export class AppComponent {
   destination!: mapboxgl.LngLat | null;
   routsToDraw!: Route[];
 
-  fromCoordinatesSelected!: MapboxGeocoder.Result;
-  destinationCoordinatesSelected!: MapboxGeocoder.Result;
+  fromCoordinatesSelected!: MapboxGeocoder.Result | MapBoxFeature;
+  destinationCoordinatesSelected!: MapboxGeocoder.Result | MapBoxFeature;
 
   constructor(
     private flightService: FlightsService,
@@ -79,12 +79,12 @@ export class AppComponent {
       });
   }
 
-  chooseOriginByMap(event: MapboxGeocoder.Result) {
+  chooseOriginByMap(event: MapBoxFeature) {
     this.fromCoordinatesSelected = event;
     console.log(JSON.stringify(event));
   }
 
-  chooseDestinationByMap(event: MapboxGeocoder.Result) {
+  chooseDestinationByMap(event: MapBoxFeature) {
     this.destinationCoordinatesSelected = event;
     console.log(JSON.stringify(event));
   }
@@ -184,6 +184,6 @@ export class AppComponent {
         return of([]);
       }
     }
-    return of([]);
+     return of([]);
   }
 }

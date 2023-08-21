@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -9,7 +10,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
-import { DateType } from 'src/app/shared/types/mapbox.types';
+import { DateType, MapBoxFeature } from 'src/app/shared/types/mapbox.types';
 import { FormOutputType } from 'src/app/shared/types/types';
 import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { MapboxSearchComponent } from '../../mapbox/mapbox-search/mapbox-search.component';
@@ -27,9 +28,9 @@ export class TopBarComponent {
   DateType = DateType;
 
   fromSearch = '';
-  @Input() fromCoordinates!: MapboxGeocoder.Result;
+  @Input() fromCoordinates!: MapboxGeocoder.Result | MapBoxFeature;
   destinationSearch = '';
-  @Input() destinationCoordinates!: MapboxGeocoder.Result;
+  @Input() destinationCoordinates!: MapboxGeocoder.Result | MapBoxFeature;
   departureDate: any;
   returnDate: any;
   numOfPassengers = 1;
@@ -47,8 +48,7 @@ export class TopBarComponent {
 
   removeSecondSearchBox = false;
 
-
-  constructor(private ngZone: NgZone) {}
+  constructor(private ngZone: NgZone, private cdRef: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
     // const autocompleteDestination = new google.maps.places.Autocomplete(
@@ -97,24 +97,34 @@ export class TopBarComponent {
       changes['fromCoordinates'] &&
       changes['fromCoordinates'].currentValue != null
     ) {
-      this.fromCoordinates = changes['fromCoordinates'].currentValue;
-      this.fromSearch = this.fromCoordinates?.place_name || '';
+      // this.fromCoordinates = changes['fromCoordinates'].currentValue;
+      // this.fromSearch = this.fromCoordinates?.place_name || '';
+      this.changeFormSearch(changes['fromCoordinates'].currentValue);
     }
     if (
       changes['destinationCoordinates'] &&
       changes['destinationCoordinates'].currentValue != null
     ) {
-      this.destinationCoordinates =
-        changes['destinationCoordinates'].currentValue;
-      this.destinationSearch = this.destinationCoordinates?.place_name || '';
+      // this.destinationCoordinates =
+      //   changes['destinationCoordinates'].currentValue;
+      // this.destinationSearch = this.destinationCoordinates?.place_name || '';
+      this.changeDestinationSearch(
+        changes['destinationCoordinates'].currentValue
+      );
     }
   }
 
   route() {
     const isRoundTrip = this.isRoundTrip || false;
     this.routeRequested.emit({
-      origin: new mapboxgl.LngLat(this.fromCoordinates?.center[0], this.fromCoordinates?.center[1]),
-      destination: new mapboxgl.LngLat(this.destinationCoordinates?.center[0], this.destinationCoordinates?.center[1]),
+      origin: new mapboxgl.LngLat(
+        this.fromCoordinates?.center[0],
+        this.fromCoordinates?.center[1]
+      ),
+      destination: new mapboxgl.LngLat(
+        this.destinationCoordinates?.center[0],
+        this.destinationCoordinates?.center[1]
+      ),
       isRoundTrip,
       departureDate: this.departureDate,
       ...(this.returnDate && { returnDate: this.returnDate }),
@@ -161,23 +171,23 @@ export class TopBarComponent {
     console.log(this.fromSearch);
     console.log(this.destinationSearch);
     console.log(this.disableSearch);
-
   }
 
-  changeFormSearch(result: MapboxGeocoder.Result) {
+  changeFormSearch(result: MapboxGeocoder.Result | MapBoxFeature) {
     this.fromSearch = result.place_name;
     this.fromCoordinates = result;
     this.updateDisableSearch();
+    this.cdRef.detectChanges();
   }
 
-  changeDestinationSearch(result: MapboxGeocoder.Result) {
+  changeDestinationSearch(result: MapboxGeocoder.Result | MapBoxFeature) {
     this.destinationSearch = result.place_name;
     this.destinationCoordinates = result;
     this.updateDisableSearch();
   }
 
   setSecondSearchBoxWhenItcolumn(set: boolean) {
-    console.log("set: ", set);
+    console.log('set: ', set);
 
     if (set) {
       // Show the second geocoder when needed

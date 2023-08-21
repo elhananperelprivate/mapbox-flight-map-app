@@ -29,6 +29,7 @@
     "ngx-toastr": "^17.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.6.1",
+    "uuid": "^9.0.0",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
@@ -40,6 +41,7 @@
     "@types/mapbox__mapbox-gl-geocoder": "^4.7.4",
     "@types/mapbox__polyline": "^1.0.2",
     "@types/mapbox-gl": "^2.7.13",
+    "@types/uuid": "^9.0.2",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

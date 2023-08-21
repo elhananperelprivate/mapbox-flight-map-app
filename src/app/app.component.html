@@ -5,7 +5,8 @@
   </div>
   <div class="body">
     <app-mapbox-map [airportCodes]="airportCodes" [originPoint]="origin" [destinationPoint]="destination"
-      [routsToDraw]="routsToDraw"></app-mapbox-map>
+      [routsToDraw]="routsToDraw" (originSelected)="chooseOriginByMap($event)"
+      (destinationSelected)="chooseDestinationByMap($event)"></app-mapbox-map>
   </div>
   <div class="flights-container" *ngIf="showFlights" [ngClass]="flightsHidden ? 'flights-hidden': ''">
     <div class="background-overlay"></div>
