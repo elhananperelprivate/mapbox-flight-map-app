@@ -34,8 +34,6 @@ export class MapboxSearchComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['placeHolder'] && changes['placeHolder'].currentValue != null) {
-      // this.fromCoordinates = changes['fromCoordinates'].currentValue;
-      // this.fromSearch = this.fromCoordinates?.place_name || '';
       if (this.geocoder) {
         this.geocoder.setPlaceholder(changes['placeHolder'].currentValue);
       }

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { Overlay } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import * as moment from 'moment';
@@ -12,6 +12,7 @@ import { airplaneSpinnerImages } from './shared/config/config';
 import { forkJoin, from, of, switchMap } from 'rxjs';
 import { destination } from '@turf/turf';
 import { MapboxService } from './services/mapbox.service';
+import { MapboxMapComponent } from './components/mapbox/mapbox-map/mapbox-map.component';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,7 @@ import { MapboxService } from './services/mapbox.service';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
+  @ViewChild('mapboxMapComponent') public mapboxMapComponent!: MapboxMapComponent;
   flights: FlightType[] = [];
   showFlights = false;
   flightsHidden = false;
@@ -102,6 +104,7 @@ export class AppComponent {
     this.airportCodes = new Set<string>();
     this.origin = null;
     this.destination = null;
+    this.mapboxMapComponent.ngOnInit();
   }
 
   clearFlightMapMarkers() {

@@ -4,7 +4,7 @@
       [destinationCoordinates]="destinationCoordinatesSelected"></app-top-bar>
   </div>
   <div class="body">
-    <app-mapbox-map [airportCodes]="airportCodes" [originPoint]="origin" [destinationPoint]="destination"
+    <app-mapbox-map #mapboxMapComponent [airportCodes]="airportCodes" [originPoint]="origin" [destinationPoint]="destination"
       [routsToDraw]="routsToDraw" (originSelected)="chooseOriginByMap($event)"
       (destinationSelected)="chooseDestinationByMap($event)"></app-mapbox-map>
   </div>
