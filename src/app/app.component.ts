@@ -6,13 +6,17 @@ import { ResizeEvent } from 'angular-resizable-element';
 import * as mapboxgl from 'mapbox-gl';
 import { FlightsService } from './services/flights.service';
 import { ProgressSpinnerComponent } from './components/top-bar/progress-spinner/progress-spinner.component';
-import { FlightType, FlightSegment, MapBoxFeature } from './shared/types/mapbox.types';
+import {
+  FlightType,
+  FlightSegment,
+  MapBoxFeature,
+} from './shared/types/mapbox.types';
 import { FormOutputType, Route } from './shared/types/types';
 import { airplaneSpinnerImages } from './shared/config/config';
 import { forkJoin, from, of, switchMap } from 'rxjs';
-import { destination } from '@turf/turf';
 import { MapboxService } from './services/mapbox.service';
 import { MapboxMapComponent } from './components/mapbox/mapbox-map/mapbox-map.component';
+import { TopBarComponent } from './components/top-bar/top-bar/top-bar.component';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +24,10 @@ import { MapboxMapComponent } from './components/mapbox/mapbox-map/mapbox-map.co
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  @ViewChild('mapboxMapComponent') public mapboxMapComponent!: MapboxMapComponent;
+  @ViewChild('mapboxMapComponent')
+  public mapboxMapComponent!: MapboxMapComponent;
+  @ViewChild('topBarComponent') public topBarComponent!: TopBarComponent;
+
   flights: FlightType[] = [];
   showFlights = false;
   flightsHidden = false;
@@ -105,6 +112,7 @@ export class AppComponent {
     this.origin = null;
     this.destination = null;
     this.mapboxMapComponent.ngOnInit();
+    this.topBarComponent.ngOnInit();
   }
 
   clearFlightMapMarkers() {
@@ -148,45 +156,50 @@ export class AppComponent {
           )
         );
 
-        return forkJoin([originAirport$, destinationAirport$]).pipe(
-          switchMap(([originAirport, destinationAirport]) => {
-            if (this.origin && this.destination) {
-              const originToAirportRout = new Route(
-                'drive',
-                this.origin,
-                originAirport,
-                null,
-                moment((firstSegment as FlightSegment)?.arrival?.at)
-                  .subtract(3, 'hours')
-                  .toDate()
-              );
+        forkJoin([originAirport$, destinationAirport$])
+          .pipe(
+            switchMap(([originAirport, destinationAirport]) => {
+              if (this.origin && this.destination) {
+                const originToAirportRout = new Route(
+                  'drive',
+                  this.origin,
+                  new mapboxgl.LngLat(
+                    originAirport?.features[0].center[0],
+                    originAirport?.features[0].center[1]
+                  ),
+                  null,
+                  moment((firstSegment as FlightSegment)?.arrival?.at)
+                    .subtract(3, 'hours')
+                    .toDate()
+                );
 
-              const airportToDestinationtRout = new Route(
-                'drive',
-                destinationAirport,
-                this.destination,
-                moment((lastSegment as FlightSegment)?.departure?.at)
-                  .add(1, 'hours')
-                  .toDate(),
-                null
-              );
-              const tempRouts = [
-                originToAirportRout,
-                airportToDestinationtRout,
-              ];
-              this.routsToDraw = tempRouts;
-              return of([]);
-            }else{
-              return of([]);
-            }
-
-          })
-        );
+                const airportToDestinationtRout = new Route(
+                  'drive',
+                  new mapboxgl.LngLat(
+                    destinationAirport?.features[0].center[0],
+                    destinationAirport?.features[0].center[1]
+                  ),
+                  this.destination,
+                  moment((lastSegment as FlightSegment)?.departure?.at)
+                    .add(1, 'hours')
+                    .toDate(),
+                  null
+                );
+                const tempRouts = [
+                  originToAirportRout,
+                  airportToDestinationtRout,
+                ];
+                this.routsToDraw = tempRouts;
+                return of([]);
+              } else {
+                return of([]);
+              }
+            })
+          )
+          .subscribe();
       } catch (e) {
         console.log(e);
-        return of([]);
       }
     }
-     return of([]);
   }
 }

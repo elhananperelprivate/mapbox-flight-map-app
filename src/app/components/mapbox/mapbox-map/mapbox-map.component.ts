@@ -229,8 +229,12 @@ export class MapboxMapComponent implements OnInit, OnChanges {
     }
   }
 
-  serachAndDrawRout(origin: mapboxgl.LngLat, destination: mapboxgl.LngLat, routeUniqueId = uuidv4()) {
-    this.map.on('load', () => {
+  serachAndDrawRout(
+    origin: mapboxgl.LngLat,
+    destination: mapboxgl.LngLat,
+    routeUniqueId = uuidv4()
+  ) {
+    const drawRouteFunc = () => {
       this.mapBoxService
         .getRoute(
           `${origin.lng},${origin.lat}`,
@@ -283,7 +287,12 @@ export class MapboxMapComponent implements OnInit, OnChanges {
           },
           complete: () => console.info('complete'),
         });
-    });
+    };
+    if (this.map.loaded()) {
+      drawRouteFunc();
+    } else {
+      this.map.on('load', drawRouteFunc);
+    }
   }
 
   drawFlightLine(

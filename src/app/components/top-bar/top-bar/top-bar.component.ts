@@ -21,10 +21,6 @@ import { MapboxSearchComponent } from '../../mapbox/mapbox-search/mapbox-search.
   styleUrls: ['./top-bar.component.css'],
 })
 export class TopBarComponent {
-  @ViewChild('fromElement') public fromSearchElementRef!: ElementRef;
-  @ViewChild('destinationElement')
-  public destinationSearchElementRef!: ElementRef;
-
   DateType = DateType;
 
   fromSearch = '';
@@ -51,45 +47,12 @@ export class TopBarComponent {
   constructor(private ngZone: NgZone, private cdRef: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
-    // const autocompleteDestination = new google.maps.places.Autocomplete(
-    //   this.destinationSearchElementRef.nativeElement
-    // );
-    // google.maps.event.addListener(
-    //   autocompleteDestination,
-    //   'place_changed',
-    //   () => {
-    //     this.destinationCoordinates = autocompleteDestination.getPlace();
-    //     this.destinationSearch =
-    //       this.destinationCoordinates?.formatted_address || '';
-    //   }
-    // );
-    // const autocompleteFrom = new google.maps.places.Autocomplete(
-    //   this.fromSearchElementRef.nativeElement
-    // );
-    // google.maps.event.addListener(autocompleteFrom, 'place_changed', () => {
-    //   this.fromCoordinates = autocompleteFrom.getPlace();
-    //   this.fromSearch = this.fromCoordinates?.formatted_address || '';
-    // });
   }
 
   ngOnInit() {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      // const geocoder = new google.maps.Geocoder();
-      // geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-      //   if (status === 'OK') {
-      //     if (results && results[0]) {
-      //       this.fromCoordinates = results[0];
-      //       this.fromSearch = this.fromCoordinates?.formatted_address || '';
-      //     } else {
-      //       console.error('No results found');
-      //     }
-      //   } else {
-      //     console.error('Geocoder failed due to: ' + status);
-      //   }
-      // });
-    });
+  }
+
+  clearAllAndReset(){
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -97,17 +60,12 @@ export class TopBarComponent {
       changes['fromCoordinates'] &&
       changes['fromCoordinates'].currentValue != null
     ) {
-      // this.fromCoordinates = changes['fromCoordinates'].currentValue;
-      // this.fromSearch = this.fromCoordinates?.place_name || '';
       this.changeFormSearch(changes['fromCoordinates'].currentValue);
     }
     if (
       changes['destinationCoordinates'] &&
       changes['destinationCoordinates'].currentValue != null
     ) {
-      // this.destinationCoordinates =
-      //   changes['destinationCoordinates'].currentValue;
-      // this.destinationSearch = this.destinationCoordinates?.place_name || '';
       this.changeDestinationSearch(
         changes['destinationCoordinates'].currentValue
       );
@@ -168,9 +126,6 @@ export class TopBarComponent {
       (!this.isRoundTrip ||
         (this.isRoundTrip && this.returnDate && this.returnDate.length > 0))
     );
-    console.log(this.fromSearch);
-    console.log(this.destinationSearch);
-    console.log(this.disableSearch);
   }
 
   changeFormSearch(result: MapboxGeocoder.Result | MapBoxFeature) {
@@ -187,8 +142,6 @@ export class TopBarComponent {
   }
 
   setSecondSearchBoxWhenItcolumn(set: boolean) {
-    console.log('set: ', set);
-
     if (set) {
       // Show the second geocoder when needed
       this.removeSecondSearchBox = false;

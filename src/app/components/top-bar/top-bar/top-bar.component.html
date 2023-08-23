@@ -11,9 +11,6 @@
         <label>From</label>
         <app-mapbox-search class="my-search-box custom-input" [geocoderName]="originGeocoder" [placeHolder]="fromSearch"
           (result)="changeFormSearch($event)" (clearSecondBox)="setSecondSearchBoxWhenItcolumn($event)"></app-mapbox-search>
-        <!-- <input type="text" class="my-search-box custom-input" (keydown.enter)="$event.preventDefault()"
-          placeholder="Current Location" type="text" #fromElement [(ngModel)]="fromSearch"
-          (ngModelChange)="updateDisableSearch()" /> -->
       </div>
       <div class="search-box" [ngClass]="{'remove': removeSecondSearchBox === true}">
         <label>Destination</label>

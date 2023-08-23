@@ -11,7 +11,7 @@ export class MapboxService {
   private readonly geocodingBaseUrl =
     'https://api.mapbox.com/geocoding/v5/mapbox.places/';
   private directionsBaseUrl =
-    'https://api.mapbox.com/directions/v5/mapbox/driving';
+    'https://api.mapbox.com/directions/v5/mapbox/driving/';
 
   constructor(private http: HttpClient) {}
 
@@ -21,7 +21,7 @@ export class MapboxService {
   }
 
   getRoute(origin: string, destination: string): Observable<any> {
-    const url = `${this.directionsBaseUrl}/${origin};${destination}?access_token=${environment.mapbox.accessToken}`;
+    const url = `${this.directionsBaseUrl}${origin};${destination}?access_token=${environment.mapbox.accessToken}`;
     return this.http.get(url);
   }
 

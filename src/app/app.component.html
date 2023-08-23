@@ -1,6 +1,6 @@
 <div class="home-page">
   <div class="header">
-    <app-top-bar (routeRequested)="searchRoute($event)" [fromCoordinates]="fromCoordinatesSelected"
+    <app-top-bar #topBarComponent (routeRequested)="searchRoute($event)" [fromCoordinates]="fromCoordinatesSelected"
       [destinationCoordinates]="destinationCoordinatesSelected"></app-top-bar>
   </div>
   <div class="body">
