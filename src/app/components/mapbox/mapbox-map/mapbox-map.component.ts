@@ -53,6 +53,8 @@ export class MapboxMapComponent implements OnInit, OnChanges {
 
   @Output() originSelected = new EventEmitter<MapBoxFeature>();
   @Output() destinationSelected = new EventEmitter<MapBoxFeature>();
+  originMarkerDrawn = false;
+  destinationMarkerDrawn = false;
 
   constructor(
     public _ngZone: NgZone,
@@ -80,20 +82,27 @@ export class MapboxMapComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     console.log(JSON.stringify(changes));
 
-    if (changes['originPoint'] && changes['originPoint'].currentValue != null) {
+    if (
+      changes['originPoint'] &&
+      changes['originPoint'].currentValue != null &&
+      !this.originMarkerDrawn
+    ) {
       this.addMarkerTolatLng(
         changes['originPoint'].currentValue,
         originMarkerConfig
       );
+      this.originMarkerDrawn = true;
     }
     if (
       changes['destinationPoint'] &&
-      changes['destinationPoint'].currentValue != null
+      changes['destinationPoint'].currentValue != null &&
+      !this.destinationMarkerDrawn
     ) {
       this.addMarkerTolatLng(
         changes['destinationPoint'].currentValue,
         destinationMarkerConfig
       );
+      this.destinationMarkerDrawn = true;
     }
     if (
       changes['airportCodes'] &&
@@ -147,7 +156,22 @@ export class MapboxMapComponent implements OnInit, OnChanges {
         lng: position.coords.longitude,
         lat: position.coords.latitude,
       });
-      this.map.setZoom(12);
+
+      const target = {
+        center: new mapboxgl.LngLat(
+          position.coords.longitude,
+          position.coords.latitude
+        ),
+        zoom: 12.5,
+        bearing: 0,
+        pitch: 0,
+      };
+
+      this.map.flyTo({
+        ...target,
+        duration: 12000,
+        essential: true,
+      });
     });
   }
 
@@ -251,6 +275,20 @@ export class MapboxMapComponent implements OnInit, OnChanges {
               const decodedCoordinates =
                 mapboxglpolyline.decode(encodedPolyline);
 
+              console.log(
+                'origin route: ',
+                origin.toString(),
+                decodedCoordinates[0]
+              );
+              console.log(
+                'destination route: ',
+                destination.toString(),
+                decodedCoordinates[decodedCoordinates.length - 1]
+              );
+              const reversDecodedCoordinates = decodedCoordinates.map(
+                ([num1, num2]) => [num2, num1]
+              );
+
               // Draw the route line on the map
               this.map.addLayer({
                 id: `route${routeUniqueId}`,
@@ -262,10 +300,7 @@ export class MapboxMapComponent implements OnInit, OnChanges {
                     properties: {},
                     geometry: {
                       type: 'LineString',
-                      coordinates: decodedCoordinates.map(([num1, num2]) => [
-                        num2,
-                        num1,
-                      ]),
+                      coordinates: reversDecodedCoordinates,
                     },
                   },
                 },
