@@ -124,6 +124,9 @@
   padding: 3px;
   outline: none;
 }
+.custom-input {
+  margin-top: 8px;
+}
 
 .custom-input:hover,
 .custom-input:focus {

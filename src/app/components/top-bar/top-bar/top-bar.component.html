@@ -9,12 +9,12 @@
     <div class="search-box-container">
       <div class="search-box">
         <label>From</label>
-        <app-mapbox-search class="my-search-box custom-input" [geocoderName]="originGeocoder" [placeHolder]="fromSearch"
+        <app-mapbox-search class="my-search-box" [geocoderName]="originGeocoder" [placeHolder]="fromSearch"
           (result)="changeFormSearch($event)" (clearSecondBox)="setSecondSearchBoxWhenItcolumn($event)"></app-mapbox-search>
       </div>
       <div class="search-box" [ngClass]="{'remove': removeSecondSearchBox === true}">
         <label>Destination</label>
-        <div class="my-search-box custom-input">
+        <div class="my-search-box">
           <app-mapbox-search #secondGeocoder [geocoderName]="destinationGeocoder" [placeHolder]="destinationSearch"
             (result)="changeDestinationSearch($event)"></app-mapbox-search>
         </div>
