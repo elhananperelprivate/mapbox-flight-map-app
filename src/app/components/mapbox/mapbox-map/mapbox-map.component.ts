@@ -424,6 +424,15 @@ export class MapboxMapComponent implements OnInit, OnChanges {
     for (const route of this.routsToDraw) {
       this.serachAndDrawRout(route.routeOrigin, route.routDestination);
     }
+    if (this.originPoint && this.destinationPoint) {
+      const bounds = new mapboxgl.LngLatBounds(
+        this.originPoint as mapboxgl.LngLatLike,
+        this.destinationPoint as mapboxgl.LngLatLike
+      );
+      this.map.fitBounds(bounds, {
+        padding: 20,
+      });
+    }
   }
 
   handleError(message: string) {
