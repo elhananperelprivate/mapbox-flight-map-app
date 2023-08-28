@@ -19,6 +19,7 @@ import { ResizableModule } from 'angular-resizable-element';
 import { ProgressSpinnerComponent } from './components/top-bar/progress-spinner/progress-spinner.component';
 import { DurationPipe } from './shared/pipes/duration.pipe';
 import { DynamicDateInputDirective } from './shared/directives/dynamic-date-input.directive';
+import { DatePickerComponent } from './components/top-bar/date-picker/date-picker.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { DynamicDateInputDirective } from './shared/directives/dynamic-date-inpu
     ProgressSpinnerComponent,
     DurationPipe,
     DynamicDateInputDirective,
+    DatePickerComponent,
   ],
   imports: [
     BrowserModule,

@@ -9,29 +9,22 @@
     <div class="search-box-container">
       <div class="search-box">
         <label>From</label>
-        <app-mapbox-search class="my-search-box custom-input" [geocoderName]="originGeocoder" [placeHolder]="fromSearch"
-          (result)="changeFormSearch($event)" (clearSecondBox)="setSecondSearchBoxWhenItcolumn($event)"></app-mapbox-search>
+        <app-mapbox-search class="my-search-box" [geocoderName]="originGeocoder" [placeHolder]="fromSearch"
+          (result)="changeFormSearch($event)"
+          (clearSecondBox)="setSecondSearchBoxWhenItcolumn($event)"></app-mapbox-search>
       </div>
       <div class="search-box" [ngClass]="{'remove': removeSecondSearchBox === true}">
         <label>Destination</label>
-        <div class="my-search-box custom-input">
+        <div class="my-search-box">
           <app-mapbox-search #secondGeocoder [geocoderName]="destinationGeocoder" [placeHolder]="destinationSearch"
             (result)="changeDestinationSearch($event)"></app-mapbox-search>
         </div>
       </div>
-      <div class="search-box" style="margin-top: 3px;">
+      <div class="search-box">
         <label>Dates</label>
         <div class="date-input">
-          <ng-container>
-            <input type="text" class="custom-input" dynamic-date-input placeholder="When will you leave?" id="departure"
-              name="departure" [(ngModel)]="departureDate" [min]="getMinDate(DateType.DEPARTURE_DATE)"
-              (ngModelChange)="updateDisableSearch()" />
-          </ng-container>
-          <ng-container *ngIf="isRoundTrip">
-            <input type="text" class="custom-input" dynamic-date-input placeholder="When will you return?" id="return"
-              name="return" [(ngModel)]="returnDate" [min]="getMinDate(DateType.RETURN_DATE)"
-              (ngModelChange)="updateDisableSearch()" />
-          </ng-container>
+          <app-date-picker [placeHolder]="isRoundTrip?  'Choose Dates range' : 'When will you leave?'"
+            [showRangePicker]="isRoundTrip" (dateRangeSelected)="updateDate($event)"></app-date-picker>
         </div>
       </div>
       <div class="search-box">

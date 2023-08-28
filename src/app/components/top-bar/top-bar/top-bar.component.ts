@@ -141,6 +141,11 @@ export class TopBarComponent {
     this.updateDisableSearch();
   }
 
+  updateDate(date: any){
+    console.log('event - ', date);
+
+  }
+
   setSecondSearchBoxWhenItcolumn(set: boolean) {
     if (set) {
       // Show the second geocoder when needed

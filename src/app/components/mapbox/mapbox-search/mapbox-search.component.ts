@@ -68,6 +68,7 @@ export class MapboxSearchComponent implements OnInit {
     });
 
     geocoder.on('clear', () => {
+      this.geocoder.setPlaceholder('');
       this.clearSecondBox.emit(true);
     });
   }

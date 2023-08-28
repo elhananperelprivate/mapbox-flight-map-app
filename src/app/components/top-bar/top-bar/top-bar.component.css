@@ -3,7 +3,7 @@
   margin-top: 3px;
 }
 
-.mat-button-toggle-group{
+.mat-button-toggle-group {
   border-radius: 16px;
   height: 28px;
   align-items: center;
@@ -16,7 +16,7 @@
   font-size: 14px;
 }
 
-.date-form{
+.date-form {
   margin-inline-start: 5px;
   border-inline-start: 1px solid #454545;
   border-bottom: none;
@@ -56,11 +56,14 @@
   overflow: hidden;
 }
 
-.search-box + .search-box {
+.search-box+.search-box {
   border-inline-start: 1px solid rgb(167, 168, 169);
 }
 
-* { box-sizing: border-box; }
+
+* {
+  box-sizing: border-box;
+}
 
 /* Media query to switch to a column layout on narrow screens */
 @media screen and (max-width: 1200px) {
@@ -69,7 +72,7 @@
   }
 
   /* Replace the border between search boxes with a border bottom */
-  .search-box + .search-box {
+  .search-box+.search-box {
     border-left: none;
     border-top: 1px solid rgb(167, 168, 169);
     margin-top: 6px;
@@ -77,7 +80,7 @@
     margin-bottom: 4px;
   }
 
-  .search-box + .remove {
+  .search-box+.remove {
     display: none;
   }
 }
@@ -88,7 +91,12 @@
   color: rgb(156, 160, 186);
 }
 
-.buttons-container{
+
+.date-input {
+  padding: 3px;
+}
+
+.buttons-container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -100,17 +108,18 @@
   margin-left: auto;
 }
 
-.route-button{
+.route-button {
   background-color: #43294f;
   padding: 6px;
   border-radius: 12px;
-  border: 0.5px solid rgb(34, 35, 35);;
+  border: 0.5px solid rgb(34, 35, 35);
+  ;
   font-family: 'Open Sans', sans-serif;
   color: azure;
 }
 
 .route-button:hover,
-.route-button:focus{
+.route-button:focus {
   background-color: #7b568c;
 }
 
@@ -123,6 +132,11 @@
   border: none;
   padding: 3px;
   outline: none;
+}
+
+.custom-input {
+  margin-top: 8px;
+  font-size: 14px;
 }
 
 .custom-input:hover,
