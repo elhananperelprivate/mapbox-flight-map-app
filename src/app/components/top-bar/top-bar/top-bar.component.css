@@ -137,6 +137,10 @@
   padding: 3px;
   outline: none;
 }
+.custom-input {
+  margin-top: 8px;
+  font-size: 14px;
+}
 
 .custom-input {
   margin-top: 8px;
