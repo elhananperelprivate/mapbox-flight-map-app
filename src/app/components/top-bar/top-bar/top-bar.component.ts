@@ -27,8 +27,8 @@ export class TopBarComponent {
   @Input() fromCoordinates!: MapboxGeocoder.Result | MapBoxFeature;
   destinationSearch = '';
   @Input() destinationCoordinates!: MapboxGeocoder.Result | MapBoxFeature;
-  departureDate: any;
-  returnDate: any;
+  departureDate!: Date;
+  returnDate!: Date;
   numOfPassengers = 1;
   isRoundTrip: boolean = false;
 
@@ -46,14 +46,11 @@ export class TopBarComponent {
 
   constructor(private ngZone: NgZone, private cdRef: ChangeDetectorRef) {}
 
-  ngAfterViewInit(): void {
-  }
+  ngAfterViewInit(): void {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
-  clearAllAndReset(){
-  }
+  clearAllAndReset() {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
@@ -122,9 +119,8 @@ export class TopBarComponent {
       this.destinationSearch &&
       this.destinationSearch.length > 0 &&
       this.departureDate &&
-      this.departureDate.length > 0 &&
       (!this.isRoundTrip ||
-        (this.isRoundTrip && this.returnDate && this.returnDate.length > 0))
+        (this.isRoundTrip && this.returnDate))
     );
   }
 
@@ -141,9 +137,21 @@ export class TopBarComponent {
     this.updateDisableSearch();
   }
 
-  updateDate(date: any){
-    console.log('event - ', date);
-
+  updateDate(
+    newDate:
+      | {
+          startDate: Date;
+          endDate: Date;
+        }
+       | { startDate: Date }
+  ) {
+    if ('endDate' in newDate) {
+      this.departureDate = newDate.startDate;
+      this.returnDate = newDate.endDate;
+    } else {
+      this.departureDate = newDate.startDate;
+    }
+    this.updateDisableSearch();
   }
 
   setSecondSearchBoxWhenItcolumn(set: boolean) {

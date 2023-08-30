@@ -6,15 +6,18 @@ html {
   background-color: #b098bc;
 }
 
+.mapboxgl-ctrl {
+  max-width: 260px !important;
+}
 
 .mapboxgl-ctrl-geocoder {
   position: absolute !important;
-  max-width: 160px !important;
+  max-width: 260px !important;
+  min-width: unset !important;
 }
 
 @media screen and (max-width: 1200px) {
   .mapboxgl-ctrl-geocoder {
-
     font-size: 12px !important;
     max-height: 28px !important;
   }

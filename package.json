@@ -21,6 +21,8 @@
     "@angular/router": "^16.1.0",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mapbox/polyline": "^1.2.0",
+    "@syncfusion/ej2-angular-calendars": "^22.2.10",
+    "@syncfusion/ej2-angular-grids": "^22.2.10",
     "@turf/turf": "^6.5.0",
     "angular-resizable-element": "^7.0.2",
     "geolib": "^3.3.4",

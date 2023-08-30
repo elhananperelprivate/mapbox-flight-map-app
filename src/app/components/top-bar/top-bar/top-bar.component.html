@@ -7,13 +7,13 @@
       </mat-button-toggle-group>
     </div>
     <div class="search-box-container">
-      <div class="search-box">
+      <div class="search-box search-geocoder">
         <label>From</label>
         <app-mapbox-search class="my-search-box" [geocoderName]="originGeocoder" [placeHolder]="fromSearch"
           (result)="changeFormSearch($event)"
           (clearSecondBox)="setSecondSearchBoxWhenItcolumn($event)"></app-mapbox-search>
       </div>
-      <div class="search-box" [ngClass]="{'remove': removeSecondSearchBox === true}">
+      <div class="search-box search-geocoder" [ngClass]="{'remove': removeSecondSearchBox === true}">
         <label>Destination</label>
         <div class="my-search-box">
           <app-mapbox-search #secondGeocoder [geocoderName]="destinationGeocoder" [placeHolder]="destinationSearch"

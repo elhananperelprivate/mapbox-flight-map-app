@@ -1,6 +1,32 @@
 <ng-container *ngIf="showRangePicker; else singlePicker">
   <mat-form-field class="date-picker-container">
     <mat-label>{{ placeHolder }}</mat-label>
+    <mat-date-range-input [rangePicker]="dateRangePicker" [min]="today">
+      <input matStartDate placeholder="Start date" #dateRangeStart>
+      <input matEndDate placeholder="End date" #dateRangeEnd
+        (dateChange)="onDateRangeChange(dateRangeStart, dateRangeEnd)">
+    </mat-date-range-input>
+    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="dateRangePicker">
+    </mat-datepicker-toggle>
+    <mat-date-range-picker #dateRangePicker></mat-date-range-picker>
+  </mat-form-field>
+</ng-container>
+<ng-template #singlePicker>
+  <mat-form-field class="date-picker-container">
+    <mat-label>{{ placeHolder }}</mat-label>
+    <input matInput [matDatepicker]="picker" [min]="today" (dateChange)="onDateChange($event)"
+      placeholder="Select a date">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    <mat-hint>MM/DD/YYYY</mat-hint>
+  </mat-form-field>
+</ng-template>
+
+
+<!-- <ng-container *ngIf="showRangePicker; else singlePicker">
+  <mat-form-field class="date-picker-container">
+    <mat-label>{{ placeHolder }}</mat-label>
     <mat-date-range-input [rangePicker]="picker" [min]="today" (dateChange)="onDateRangeChange($event)">
       <input matStartDate placeholder="Start Date">
       <input matEndDate placeholder="End Date">
@@ -18,4 +44,4 @@
     <mat-datepicker #picker></mat-datepicker>
     <mat-hint>MM/DD/YYYY</mat-hint>
   </mat-form-field>
-</ng-template>
+</ng-template> -->

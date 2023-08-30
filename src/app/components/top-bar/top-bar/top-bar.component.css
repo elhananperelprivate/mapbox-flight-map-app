@@ -91,6 +91,10 @@
   color: rgb(156, 160, 186);
 }
 
+.search-geocoder {
+  width: 260px;
+}
+
 
 .date-input {
   padding: 3px;
