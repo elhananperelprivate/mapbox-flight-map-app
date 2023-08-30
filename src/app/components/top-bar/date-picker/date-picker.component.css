@@ -1,3 +1,11 @@
 input.mat-input-element {
   height: 105px
 }
+
+/* ::ng-deep .mat-mdc-icon-button svg {
+  width: 18px;
+} */
+
+/* ::ng-deep .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) .mat-mdc-form-field-infix {
+  padding-top: 12px;
+} */
